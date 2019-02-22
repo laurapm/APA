@@ -1,0 +1,32 @@
+﻿Compilación iniciada a las 15/03/2018 11:04:38.
+     1>Proyecto "c:\Users\Ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida.vcxproj" en el nodo 2 (Build destinos).
+     1>AddCudaCompileDeps:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\cl.exe /E /nologo /showIncludes /TP /D__CUDACC__ /DWIN32 /DWIN64 /D_DEBUG /D_CONSOLE /D_MBCS /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\bin" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include" /I. /FIcuda_runtime.h /c "c:\Users\Ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida\kernel.cu" 
+     1>El proyecto "c:\Users\Ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida.vcxproj" (1) está compilando "c:\Users\Ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida.vcxproj" (1:2) en el nodo 2 (CudaBuildCore destinos).
+     1>CudaBuildCore:
+         Compiling CUDA source file kernel.cu...
+         cmd.exe /C "C:\Users\Ángel\AppData\Local\Temp\tmpf82c90aac6864a1aa0215700e92f2c51.cmd"
+         "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\bin\nvcc.exe" -gencode=arch=compute_30,code=\"sm_30,compute_30\" --use-local-env --cl-version 2013 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -o x64\Debug\kernel.cu.obj "c:\Users\Ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida\kernel.cu"
+         
+         c:\Users\Ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\bin\nvcc.exe" -gencode=arch=compute_30,code=\"sm_30,compute_30\" --use-local-env --cl-version 2013 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -o x64\Debug\kernel.cu.obj "c:\Users\Ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida\kernel.cu" 
+     1>CUDACOMPILE : ptxas warning : Stack size for entry function '_Z14ToyBlastManualPiiiiii' cannot be statically determined
+         kernel.cu
+     1>c:/Users/Ángel/documents/visual studio 2013/Projects/PECL1 APA - MemCompartida/PECL1 APA - MemCompartida/kernel.cu(92): warning C4244: 'argumento' : conversión de 'time_t' a 'unsigned int'; posible pérdida de datos
+     1>c:/Users/Ángel/documents/visual studio 2013/Projects/PECL1 APA - MemCompartida/PECL1 APA - MemCompartida/kernel.cu(106): warning C4244: 'argumento' : conversión de 'time_t' a 'unsigned int'; posible pérdida de datos
+     1>Compilación del proyecto terminada "c:\Users\Ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida.vcxproj" (CudaBuildCore destinos).
+     1>Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"c:\users\ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\x64\Debug\PECL1 APA - MemCompartida.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\lib\x64" cudart.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"c:\users\ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\x64\Debug\PECL1 APA - MemCompartida.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"c:\users\ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\x64\Debug\PECL1 APA - MemCompartida.lib" /MACHINE:X64 x64\Debug\kernel.cu.obj
+         PECL1 APA - MemCompartida.vcxproj -> c:\users\ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\x64\Debug\PECL1 APA - MemCompartida.exe
+       PostBuildEvent:
+         echo copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\bin\cudart*.dll" "c:\users\ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\x64\Debug\"
+         copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\bin\cudart*.dll" "c:\users\ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\x64\Debug\"
+         :VCEnd
+         copy "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\bin\cudart*.dll" "c:\users\ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\x64\Debug\"
+         C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\bin\cudart32_91.dll
+         C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\bin\cudart64_91.dll
+                 2 archivo(s) copiado(s).
+     1>Compilación del proyecto terminada "c:\Users\Ángel\documents\visual studio 2013\Projects\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida\PECL1 APA - MemCompartida.vcxproj" (Build destinos).
+
+Compilación correcta.
+
+Tiempo transcurrido 00:00:14.65
