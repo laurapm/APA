@@ -1,0 +1,37 @@
+Preguntas APA2:
+
+- :: con dos listas -> ((1,2),3,4))
+- private en funciones -> error, no se puede acceder
+- abstract member (redactar)
+- case class (redactar)
+- pattern matching (redactar)
+- los objetos se crean automaticamente, pero es el programador 
+quien elige cuando iniciarlos.
+- Ventajas de usar la nube (redactar)
+- requerimientos y modelos tipicos (saas, paas, iaas) tanto de redactar como test.
+- diapositva 6 de cloud computing (redactar)
+- paquetes (test)
+- match
+	_
+	5
+	6
+
+	Compila y coge la primera opcion.
+
+- Codigo de operaciones matematicas (readctar) cuidado con el tipo de dato inicial
+si es int, no hay decimales por ejemplo 11/5 -> 2
+- JSP y JDO y JPA(redactar)
+- Clases Rich Wrapper (redactar y porner ejemplos)
+- Notacion de operadores: posfija, infija, prefija (readctar y poner ejemplos)
+- Objetos singleton (redactar)
+- Los arrays se pueden modificar pero por ejemplo:
+	array1 se puede modificar
+	val array2  = 1,2,3
+	array2  = array1 no se puede hacer (test)
+- planificacion de tareas con cron (test)
+- caracterisiticas de gwt, ventajas y contras (redactar y test)
+- ajax (test)
+- manifiesto gwt (test)
+- mapreduce cloud (test o redactar)
+- nube privada, publica e hibrida (creo que redactar)
+- 
