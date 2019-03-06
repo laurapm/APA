@@ -1,11 +1,11 @@
-﻿Compilación iniciada a las 26/02/2019 18:10:23.
+﻿Compilación iniciada a las 05/03/2019 16:48:00.
      1>Proyecto "C:\Users\Ángel\Documents\Universidad\2018-2019\Segundo Cuatrimestre\Ampliación de Programación Avanzada\PECL1 - Pruebas\PECL1 - Pruebas\PECL1 - Pruebas.vcxproj" en el nodo 2 (Build destinos).
      1>AddCudaCompileDeps:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\cl.exe /E /nologo /showIncludes /TP /D__CUDACC__ /DWIN32 /DWIN64 /D_DEBUG /D_CONSOLE /D_MBCS /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\bin" /I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include" /I. /FIcuda_runtime.h /c "C:\Users\Ángel\Documents\Universidad\2018-2019\Segundo Cuatrimestre\Ampliación de Programación Avanzada\PECL1 - Pruebas\PECL1 - Pruebas\kernel.cu" 
      1>El proyecto "C:\Users\Ángel\Documents\Universidad\2018-2019\Segundo Cuatrimestre\Ampliación de Programación Avanzada\PECL1 - Pruebas\PECL1 - Pruebas\PECL1 - Pruebas.vcxproj" (1) está compilando "C:\Users\Ángel\Documents\Universidad\2018-2019\Segundo Cuatrimestre\Ampliación de Programación Avanzada\PECL1 - Pruebas\PECL1 - Pruebas\PECL1 - Pruebas.vcxproj" (1:2) en el nodo 2 (CudaBuildCore destinos).
      1>CudaBuildCore:
          Compiling CUDA source file kernel.cu...
-         cmd.exe /C "C:\Users\Ángel\AppData\Local\Temp\tmp899cef5252b241dab28d1c135068b3cf.cmd"
+         cmd.exe /C "C:\Users\Ángel\AppData\Local\Temp\tmpb32c873c9fe04bb8b55bae804c4cd20e.cmd"
          "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\bin\nvcc.exe" -gencode=arch=compute_30,code=\"sm_30,compute_30\" --use-local-env --cl-version 2013 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -o x64\Debug\kernel.cu.obj "C:\Users\Ángel\Documents\Universidad\2018-2019\Segundo Cuatrimestre\Ampliación de Programación Avanzada\PECL1 - Pruebas\PECL1 - Pruebas\kernel.cu"
          
          C:\Users\Ángel\Documents\Universidad\2018-2019\Segundo Cuatrimestre\Ampliación de Programación Avanzada\PECL1 - Pruebas\PECL1 - Pruebas>"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\bin\nvcc.exe" -gencode=arch=compute_30,code=\"sm_30,compute_30\" --use-local-env --cl-version 2013 -ccbin "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64" -x cu  -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include" -I"C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include"  -G   --keep-dir x64\Debug -maxrregcount=0  --machine 64 --compile -cudart static  -g   -DWIN32 -DWIN64 -D_DEBUG -D_CONSOLE -D_MBCS -Xcompiler "/EHsc /W3 /nologo /Od /FS /Zi /RTC1 /MDd " -o x64\Debug\kernel.cu.obj "C:\Users\Ángel\Documents\Universidad\2018-2019\Segundo Cuatrimestre\Ampliación de Programación Avanzada\PECL1 - Pruebas\PECL1 - Pruebas\kernel.cu" 
@@ -29,4 +29,4 @@
 
 Compilación correcta.
 
-Tiempo transcurrido 00:00:14.76
+Tiempo transcurrido 00:00:15.04

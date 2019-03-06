@@ -7,12 +7,25 @@
 #include <fstream>
 #include <windows.h>
 
+#define ARRIBA 72
+#define ABAJO 80
+#define DERECHA 77
+#define IZQUIERDA 75
+
 using namespace std;
 
+//Funciones que van a utilizarse a lo largo del programa
+//CPU
 void generarTablero(int *tablero, int filas, int columnas);
 void imprimirTablero(int *tablero, int filas, int columnas);
 void imprimirColumnas(int columnas);
 void generarSemillas(int *tablero, int filas, int columnas);
+
+//GPU
+__device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, int columnas, int anterior);
+__device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, int anterior);
+__device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas, int columnas, int anterior);
+__device__ void compruebaIzquierda(int *tablero, int fila, int columna, int filas, int columnas, int anterior);
 
 int main(void){
 
@@ -71,11 +84,11 @@ void generarTablero(int *tablero, int filas, int columnas){
 //Genera los números para jugar en el tablero
 void generarSemillas(int *tablero, int filas, int columnas){
 	int tamaño = filas * columnas;
-	int contador = 3;
-	while (contador > 0){
+	int contador = 0;
+	while (contador < 3){
 		int aux = rand() % 3;
-		int i = rand() % tamaño + 1;
-		cout << "POSICION: " << i;
+		int i = rand() % tamaño;
+		//cout << "POSICION: " << i+1 << "\n";
 		if (tablero[i] == 0){
 			switch (aux){
 			case 0:
@@ -88,7 +101,7 @@ void generarSemillas(int *tablero, int filas, int columnas){
 				tablero[i] = 8;
 				break;
 			}
-			contador--;
+			contador++;
 		}
 	}
 }
@@ -153,4 +166,62 @@ void imprimirTablero(int *tablero, int filas, int columnas) {
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 		cout << "\n";
 	}
+}
+
+__device__ void compruebaSemillas(int *tablero, int fila, int columna, int filas, int columnas, int anterior){
+
+
+
+}
+
+__device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, int columnas, int anterior){
+
+	if (tablero[((fila - 1) * columnas) + columna] == anterior){
+		tablero[((fila - 1) * columnas) + columna] = anterior * 2;
+		tablero[(fila * columnas) + columna] = 0;
+	}
+	else if (tablero[((fila - 1) * columnas) + columna] == 0){
+		tablero[((fila - 1) * columnas) + columna] = anterior;
+		tablero[(fila * columnas) + columna] = 0;
+	}
+
+}
+
+__device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, int anterior){
+
+	if (tablero[((fila + 1) * columnas) + columna] == anterior){
+		tablero[((fila + 1) * columnas) + columna] = anterior * 2;
+		tablero[(fila * columnas) + columna] = 0;
+	}
+	else if (tablero[((fila + 1) * columnas) + columna] == 0){
+		tablero[((fila + 1) * columnas) + columna] = anterior;
+		tablero[(fila * columnas) + columna] = 0;
+	}
+
+}
+
+__device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas, int columnas, int anterior){
+
+	if (tablero[(fila * columnas) + (columna + 1)] == anterior){
+		tablero[(fila * columnas) + (columna + 1)] = anterior * 2;
+		tablero[(fila * columnas) + columna] = 0;
+	}
+	else if (tablero[(fila * columnas) + (columna + 1)] == 0){
+		tablero[(fila * columnas) + (columna + 1)] = anterior;
+		tablero[(fila * columnas) + columna] = 0;
+	}
+
+}
+
+__device__ void compruebaIzquierda(int *tablero, int fila, int columna, int filas, int columnas, int anterior){
+
+	if (tablero[(fila * columnas) + (columna - 1)] == anterior){
+		tablero[(fila * columnas) + (columna - 1)] = anterior * 2;
+		tablero[(fila * columnas) + columna] = 0;
+	}
+	else if (tablero[(fila * columnas) + (columna - 1)] == 0){
+		tablero[(fila * columnas) + (columna - 1)] = anterior;
+		tablero[(fila * columnas) + columna] = 0;
+	}
+
 }
