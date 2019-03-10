@@ -169,14 +169,14 @@ void imprimirTablero(int *tablero, int filas, int columnas) {
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Gris
 			}
 			if (bloque < 10) cout << "| " << bloque << " |";
-			else cout << "|" << bloque << "|";
+			else cout << "| " << bloque << "|";
 		}
 		SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 		cout << "\n";
 	}
 }
 
-__device__ void compruebaSemillas(int *tablero, int filas, int columnas, int movimiento){
+__device__ void compruebaSemillas(int *tablero, int fila, int columna, int filas, int columnas, int movimiento){
 
 	switch (movimiento){
 	case ARRIBA:
@@ -185,9 +185,7 @@ __device__ void compruebaSemillas(int *tablero, int filas, int columnas, int mov
 		}
 		break;
 	case ABAJO:
-		for (int i = 0; i < columnas; i++){
-			compruebaArriba(tablero, filas - 1, i, filas, columnas);
-		}
+		compruebaArriba(tablero, fila, columna, filas, columnas);
 		break;
 	case DERECHA:
 		for (int i = 0; i < filas; i++){
@@ -208,17 +206,28 @@ __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, 
 	bajarCeros(tablero, fila, columna, filas, columnas);
 	if (tablero[(fila * columnas) + columna] != 0 && tablero[(fila * columnas) + columna] == tablero[((fila - 1) * columnas) + columna]){
 		tablero[(fila * columnas) + columna] = tablero[(fila * columnas) + columna] * 2;
+		tablero[((fila - 1) * columnas) + columna] = 0;
 		bajarCeros(tablero, fila, columna, filas, columnas);
 	}
-	compruebaArriba(tablero, fila - 1, columna, filas, columnas);
+	//compruebaArriba(tablero, fila - 1, columna, filas, columnas);
 }
 
 __device__ void bajarCeros(int *tablero, int fila, int columna, int filas, int columnas){
 	
-	for (int i = filas - 1; i > 0; i--){
+	/*for (int i = filas - 1; i > 0; i--){
 		if (tablero[(i * columnas) + columna] == 0){
 			tablero[(i * columnas) + columna] = tablero[((i - 1) * columnas) + columna];
 			tablero[((i - 1) * columnas) + columna] = 0;
+		}
+
+	}*/
+	for (int i = filas - 1; i > 0; i--){
+		if (tablero[((i - 1) * columnas) + columna] != 0){
+			int a = i;
+			while (tablero[((a - 1) * columnas) + columna] == 0){
+				tablero[(a * columnas) + columna] = tablero[((a - 1) * columnas) + columna];
+				tablero[((a - 1) * columnas) + columna] = 0;
+			}
 		}
 	}
 
@@ -291,7 +300,7 @@ __global__ void juegoManual(int *tablero, int filas, int columnas, int movimient
 	int columnaHilo = threadIdx.x;
 	int filaHilo = threadIdx.y;
 
-	compruebaSemillas(tablero, filas, columnas, movimiento);
+	compruebaSemillas(tablero, filaHilo, columnaHilo, filas, columnas, movimiento);
 
 	__syncthreads();
 
@@ -299,7 +308,7 @@ __global__ void juegoManual(int *tablero, int filas, int columnas, int movimient
 
 void modoManual(int *tablero, int filas, int columnas){
 
-	system("cls");
+	//system("cls");
 	int movimiento = 1;
 	while (movimiento != ESCAPE){
 		imprimirTablero(tablero, filas, columnas);
@@ -321,11 +330,11 @@ void modoManual(int *tablero, int filas, int columnas){
 		dim3 DimBlock(filas, columnas);
 		juegoManual << < DimGrid, DimBlock >> > (tablero_gpu, filas, columnas, movimiento);
 		cudaMemcpy(tablero, tablero_gpu, sizeof(int)* filas * columnas, cudaMemcpyDeviceToHost);
-		system("cls");
+		//system("cls");
 		generarSemillas(tablero, filas, columnas);
 		cudaFree(tablero_gpu);
 
 	}
-	system("cls");
+	//system("cls");
 
 }
