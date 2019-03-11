@@ -214,14 +214,14 @@ __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, 
 
 __device__ void bajarCeros(int *tablero, int fila, int columna, int filas, int columnas){
 	
-	/*for (int i = filas - 1; i > 0; i--){
+	for (int i = filas - 1; i > 0; i--){
 		if (tablero[(i * columnas) + columna] == 0){
 			tablero[(i * columnas) + columna] = tablero[((i - 1) * columnas) + columna];
 			tablero[((i - 1) * columnas) + columna] = 0;
 		}
 
-	}*/
-	for (int i = filas - 1; i > 0; i--){
+	}
+	/*for (int i = filas - 1; i > 0; i--){
 		if (tablero[((i - 1) * columnas) + columna] != 0){
 			int a = i;
 			while (tablero[((a - 1) * columnas) + columna] == 0){
@@ -229,7 +229,7 @@ __device__ void bajarCeros(int *tablero, int fila, int columna, int filas, int c
 				tablero[((a - 1) * columnas) + columna] = 0;
 			}
 		}
-	}
+	}*/
 
 }
 
