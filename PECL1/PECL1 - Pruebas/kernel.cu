@@ -24,8 +24,8 @@ void generarSemillas(int *tablero, int filas, int columnas);
 void modoManual(int *tablero, int filas, int columnas);
 
 //GPU
-__global__ void juegoManual(int *tablero, int fila, int columna, int filas, int columnas, int movimiento);
-__device__ void compruebaSemillas(int *tablero, int filas, int columnas, int movimiento);
+__global__ void juegoManual(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
+__device__ void compruebaSemillas(int *tablero, int filas, int columnas, char movimiento);
 __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, int columnas);
 __device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, int anterior);
 __device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas, int columnas, int anterior);
@@ -176,23 +176,23 @@ void imprimirTablero(int *tablero, int filas, int columnas) {
 	}
 }
 
-__device__ void compruebaSemillas(int *tablero, int fila, int columna, int filas, int columnas, int movimiento){
+__device__ void compruebaSemillas(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	switch (movimiento){
-	case ARRIBA:
+	case 'W':
 		for (int i = 0; i < columnas; i++){
 			compruebaAux(tablero, 0, i, filas, columnas, tablero[i]);
 		}
 		break;
-	case ABAJO:
+	case 'S':
 		compruebaArriba(tablero, fila, columna, filas, columnas);
 		break;
-	case DERECHA:
+	case 'D':
 		for (int i = 0; i < filas; i++){
 			compruebaIzquierda(tablero, i, (columnas - 1), filas, columnas, tablero[(i * columnas) + (columnas - 1)]);
 		}
 		break;
-	case IZQUIERDA:
+	case 'A':
 		for (int i = 0; i < filas; i++){
 			compruebaDerecha(tablero, i, 0, filas, columnas, tablero[i * columnas]);
 		}
@@ -294,7 +294,7 @@ __device__ void compruebaIzquierda(int *tablero, int fila, int columna, int fila
 
 }
 
-__global__ void juegoManual(int *tablero, int filas, int columnas, int movimiento){
+__global__ void juegoManual(int *tablero, int filas, int columnas, char movimiento){
 
 	//Guardamos la columna y la fila del hilo
 	int columnaHilo = threadIdx.x;
@@ -309,13 +309,13 @@ __global__ void juegoManual(int *tablero, int filas, int columnas, int movimient
 void modoManual(int *tablero, int filas, int columnas){
 
 	//system("cls");
-	int movimiento = 1;
+	char movimiento = ' ';
 	while (movimiento != ESCAPE){
 		imprimirTablero(tablero, filas, columnas);
 		cout << "Pulsa arriba, abajo, izquierda o dercha en el teclado para mover los numeros (ESC para salir): \n";
 		cin >> movimiento;
 		//while (movimiento != (ARRIBA || ABAJO || IZQUIERDA || DERECHA)) {
-		while (movimiento != ARRIBA && movimiento != ABAJO && movimiento != IZQUIERDA && movimiento != DERECHA) {
+		while (movimiento != 'W' && movimiento != 'S' && movimiento != 'A' && movimiento != 'D') {
 			cout << "Tecla no valida, introduzca una valida:\n";
 			cin >> movimiento;
 		}
