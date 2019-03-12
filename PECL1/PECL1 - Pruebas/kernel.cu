@@ -7,12 +7,6 @@
 #include <fstream>
 #include <windows.h>
 
-#define ARRIBA 72
-#define ABAJO 80
-#define DERECHA 77
-#define IZQUIERDA 75
-#define ESCAPE 27
-
 using namespace std;
 
 //Funciones que van a utilizarse a lo largo del programa
@@ -26,13 +20,12 @@ void modoManual(int *tablero, int filas, int columnas);
 //GPU
 __global__ void juegoManual(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
 __device__ void compruebaSemillas(int *tablero, int filas, int columnas, char movimiento);
-__device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, int columnas);
-__device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, int anterior);
-__device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas, int columnas, int anterior);
-__device__ void compruebaIzquierda(int *tablero, int fila, int columna, int filas, int columnas, int anterior);
+__device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
+__device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
+__device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
+__device__ void compruebaIzquierda(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
 //AUX
-__device__ void compruebaAux(int *tablero, int fila, int columna, int filas, int columnas, int anterior);
-__device__ void bajarCeros(int *tablero, int fila, int columna, int filas, int columnas);
+__device__ void moverCeros(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
 
 int main(void){
 
@@ -165,8 +158,11 @@ void imprimirTablero(int *tablero, int filas, int columnas) {
 				case 8:
 					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 13); //Morado
 					break;
+				case 16:
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 9); //Azul
+					break;
 				default:
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Gris
+					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Blanco
 			}
 			if (bloque < 10) cout << "| " << bloque << " |";
 			else cout << "| " << bloque << "|";
@@ -180,40 +176,24 @@ __device__ void compruebaSemillas(int *tablero, int fila, int columna, int filas
 
 	switch (movimiento){
 	case 'W':
-		for (int i = 0; i < columnas; i++){
-			compruebaAux(tablero, 0, i, filas, columnas, tablero[i]);
-		}
+		compruebaAbajo(tablero, fila, columna, filas, columnas, movimiento);
 		break;
 	case 'S':
-		compruebaArriba(tablero, fila, columna, filas, columnas);
+		compruebaArriba(tablero, fila, columna, filas, columnas, movimiento);
 		break;
 	case 'D':
-		for (int i = 0; i < filas; i++){
-			compruebaIzquierda(tablero, i, (columnas - 1), filas, columnas, tablero[(i * columnas) + (columnas - 1)]);
-		}
+		compruebaIzquierda(tablero, fila, columna, filas, columnas, movimiento);
 		break;
 	case 'A':
-		for (int i = 0; i < filas; i++){
-			compruebaDerecha(tablero, i, 0, filas, columnas, tablero[i * columnas]);
-		}
+		compruebaDerecha(tablero, fila, columna, filas, columnas, movimiento);
 		break;
 	}
 
 }
 
-__device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, int columnas){
 
-	bajarCeros(tablero, fila, columna, filas, columnas);
-	if (tablero[(fila * columnas) + columna] != 0 && tablero[(fila * columnas) + columna] == tablero[((fila - 1) * columnas) + columna]){
-		tablero[(fila * columnas) + columna] = tablero[(fila * columnas) + columna] * 2;
-		tablero[((fila - 1) * columnas) + columna] = 0;
-		bajarCeros(tablero, fila, columna, filas, columnas);
-	}
-	//compruebaArriba(tablero, fila - 1, columna, filas, columnas);
-}
+__device__ void moverCeros(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
-__device__ void bajarCeros(int *tablero, int fila, int columna, int filas, int columnas){
-	
 	for (int i = filas - 1; i > 0; i--){
 		if (tablero[(i * columnas) + columna] == 0){
 			tablero[(i * columnas) + columna] = tablero[((i - 1) * columnas) + columna];
@@ -222,74 +202,57 @@ __device__ void bajarCeros(int *tablero, int fila, int columna, int filas, int c
 
 	}
 	/*for (int i = filas - 1; i > 0; i--){
-		if (tablero[((i - 1) * columnas) + columna] != 0){
-			int a = i;
-			while (tablero[((a - 1) * columnas) + columna] == 0){
-				tablero[(a * columnas) + columna] = tablero[((a - 1) * columnas) + columna];
-				tablero[((a - 1) * columnas) + columna] = 0;
-			}
-		}
+	if (tablero[((i - 1) * columnas) + columna] != 0){
+	int a = i;
+	while (tablero[((a - 1) * columnas) + columna] == 0){
+	tablero[(a * columnas) + columna] = tablero[((a - 1) * columnas) + columna];
+	tablero[((a - 1) * columnas) + columna] = 0;
+	}
+	}
 	}*/
 
 }
 
-__device__ void compruebaAux(int *tablero, int fila, int columna, int filas, int columnas, int anterior){
+__device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
-	int siguiente = tablero[((fila + 1) * columnas) + columna];
-	int contador = filas;
-	if (fila != (filas - 1)){
-		while (anterior == 0 && contador != 0){
-			tablero[(fila * columnas) + columna] = siguiente;
-		}
-		if (siguiente == anterior){
-			tablero[(fila * columnas) + columna] = anterior * 2;
-			tablero[((fila + 1) * columnas) + columna] = 0;
-			//compruebaAux(tablero, fila + 1, columna, filas, columnas, tablero[(fila * columnas) + columna]);
-		}
-		/*else if (anterior == 0){
-			if (siguiente != 0) tablero[(fila * columnas) + columna] = siguiente;
-			compruebaAux(tablero, fila + 1, columna, filas, columnas, tablero[(fila * columnas) + columna]);
-		}*/
-		compruebaAux(tablero, fila + 1, columna, filas, columnas, tablero[(fila * columnas) + columna]);
+	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
+	if (tablero[(fila * columnas) + columna] != 0 && tablero[(fila * columnas) + columna] == tablero[((fila - 1) * columnas) + columna]){
+		tablero[(fila * columnas) + columna] = tablero[(fila * columnas) + columna] * 2;
+		tablero[((fila - 1) * columnas) + columna] = 0;
+		moverCeros(tablero, fila, columna, filas, columnas, movimiento);
 	}
-
+	//compruebaArriba(tablero, fila - 1, columna, filas, columnas);
 }
 
-__device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, int anterior){
+__device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
-	if (tablero[((fila + 1) * columnas) + columna] == anterior){
-		tablero[(fila * columnas) + columna] = anterior * 2;
+	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
+	if (tablero[(fila * columnas) + columna] != 0 && tablero[(fila * columnas) + columna] == tablero[((fila + 1) * columnas) + columna]){
+		tablero[(fila * columnas) + columna] = tablero[(fila * columnas) + columna] * 2;
 		tablero[((fila + 1) * columnas) + columna] = 0;
-	}
-	else if (tablero[(fila * columnas) + columna] == 0){
-		tablero[(fila * columnas) + columna] = tablero[((fila + 1) * columnas) + columna];
-		tablero[((fila + 1) * columnas) + columna] = 0;
+		moverCeros(tablero, fila, columna, filas, columnas, movimiento);
 	}
 
 }
 
-__device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas, int columnas, int anterior){
+__device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
-	if (tablero[(fila * columnas) + (columna + 1)] == anterior){
-		tablero[(fila * columnas) + columna] = anterior * 2;
+	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
+	if (tablero[(fila * columnas) + columna] != 0 && tablero[(fila * columnas) + columna] == tablero[(fila * columnas) + (columna + 1)]){
+		tablero[(fila * columnas) + columna] = tablero[(fila * columnas) + columna] * 2;
 		tablero[(fila * columnas) + (columna + 1)] = 0;
-	}
-	else if (tablero[(fila * columnas) + columna] == 0){
-		tablero[(fila * columnas) + columna] = tablero[(fila * columnas) + (columna + 1)];
-		tablero[(fila * columnas) + (columna + 1)] = 0;
+		moverCeros(tablero, fila, columna, filas, columnas, movimiento);
 	}
 
 }
 
-__device__ void compruebaIzquierda(int *tablero, int fila, int columna, int filas, int columnas, int anterior){
+__device__ void compruebaIzquierda(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
-	if (tablero[(fila * columnas) + (columna - 1)] == anterior){
-		tablero[(fila * columnas) + columna] = anterior * 2;
+	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
+	if (tablero[(fila * columnas) + columna] != 0 && tablero[(fila * columnas) + columna] == tablero[(fila * columnas) + (columna - 1)]){
+		tablero[(fila * columnas) + columna] = tablero[(fila * columnas) + columna] * 2;
 		tablero[(fila * columnas) + (columna - 1)] = 0;
-	}
-	else if (tablero[(fila * columnas) + columna] == 0){
-		tablero[(fila * columnas) + columna] = tablero[(fila * columnas) + (columna - 1)];
-		tablero[(fila * columnas) + (columna - 1)] = 0;
+		moverCeros(tablero, fila, columna, filas, columnas, movimiento);
 	}
 
 }
@@ -312,7 +275,7 @@ void modoManual(int *tablero, int filas, int columnas){
 	char movimiento = ' ';
 	while (movimiento != ESCAPE){
 		imprimirTablero(tablero, filas, columnas);
-		cout << "Pulsa arriba, abajo, izquierda o dercha en el teclado para mover los numeros (ESC para salir): \n";
+		cout << "Pulsa W, A, S o D para mover los numeros (Z para salir): \n";
 		cin >> movimiento;
 		//while (movimiento != (ARRIBA || ABAJO || IZQUIERDA || DERECHA)) {
 		while (movimiento != 'W' && movimiento != 'S' && movimiento != 'A' && movimiento != 'D') {
