@@ -166,20 +166,20 @@ void imprimirTablero(int *tablero, int filas, int columnas) {
 			//Damos color en función del número imprimido
 			int bloque = tablero[i * filas + k];
 			switch (bloque) {
-				case 2:
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14); //Amarillo
-					break;
-				case 4:
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12); //Rojo
-					break;
-				case 8:
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 13); //Morado
-					break;
-				case 16:
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 9); //Azul
-					break;
-				default:
-					SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Blanco
+			case 2:
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 14); //Amarillo
+				break;
+			case 4:
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12); //Rojo
+				break;
+			case 8:
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 13); //Morado
+				break;
+			case 16:
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 9); //Azul
+				break;
+			default:
+				SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7); //Blanco
 			}
 			if (bloque < 10) cout << "| " << bloque << " |";
 			else cout << "| " << bloque << "|";
@@ -210,23 +210,33 @@ __device__ void compruebaSemillas(int *tablero, int fila, int columna, int filas
 
 
 __device__ void moverCeros(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
-
-	for (int i = filas - 1; i > 0; i--){
-		for (int j = i; j > 0; j--){
-			if (tablero[(j * columnas) + columna] != 0 && tablero[((j - 1) * columnas) + columna] == 0){
-				tablero[((j - 1) * columnas) + columna] = tablero[(j * columnas) + columna];
-				tablero[(j * columnas) + columna] = 0;
+	if (movimiento == 'W'){
+		for (int i = filas - 1; i > 0; i--){
+			for (int j = i; j > 0; j--){
+				if (tablero[(j * columnas) + columna] != 0 && tablero[((j - 1) * columnas) + columna] == 0){
+					tablero[((j - 1) * columnas) + columna] = tablero[(j * columnas) + columna];
+					tablero[(j * columnas) + columna] = 0;
+				}
+			}
+		}
+	}
+	if (movimiento == 'S'){
+		for (int i = 0; i < filas - 1; i++){
+			for (int j = i; j < filas - 1; j++){
+				if (tablero[(j * columnas) + columna] != 0 && tablero[((j + 1) * columnas) + columna] == 0){
+					tablero[((j + 1) * columnas) + columna] = tablero[(j * columnas) + columna];
+					tablero[(j * columnas) + columna] = 0;
+				}
 			}
 		}
 	}
 
 	/*
 	for (int i = filas - 1; i > 0; i--){
-		if (tablero[(i * columnas) + columna] == 0){
-			tablero[(i * columnas) + columna] = tablero[((i - 1) * columnas) + columna];
-			tablero[((i - 1) * columnas) + columna] = 0;
-		}
-
+	if (tablero[(i * columnas) + columna] == 0){
+	tablero[(i * columnas) + columna] = tablero[((i - 1) * columnas) + columna];
+	tablero[((i - 1) * columnas) + columna] = 0;
+	}
 	}*/
 	/*for (int i = filas - 1; i > 0; i--){
 	if (tablero[((i - 1) * columnas) + columna] != 0){
