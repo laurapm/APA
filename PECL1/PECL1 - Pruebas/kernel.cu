@@ -1,9 +1,12 @@
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
 #include <iostream>
+#include <device_functions.h>
+#include <cuda_runtime_api.h>
 #include <conio.h>
 #include <time.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <fstream>
 #include <windows.h>
 
@@ -15,6 +18,8 @@ void generarTablero(int *tablero, int filas, int columnas);
 void imprimirTablero(int *tablero, int filas, int columnas);
 void imprimirColumnas(int columnas);
 void generarSemillas(int *tablero, int filas, int columnas);
+void guardarPartida(int *tablero, int filas, int columnas/*, int dificultad*/);
+void cargarPartida();
 void modoManual(int *tablero, int filas, int columnas);
 
 //GPU
@@ -39,35 +44,47 @@ int main(void){
 	int columnas = 0;
 	int dificultad = 0;
 
-	//Recogemos los datos de filas y columnas del tablero que vamos a usar
-	cout << "Seleccione el numero de filas con las que desea jugar: \n";
-	cin >> filas;
-	cout << "Seleccione el numero de columnas con las que desea jugar: \n";
-	cin >> columnas;
-
-	//Tablero mínimo de 4 por 4
-	while (filas < 4) {
-		cout << "El numero de filas con las que desea jugar es demasiado pequeño, el minimo aceptado es 4: \n";
-		cin >> filas;
+	//Preguntamos si quiere cargar un juego guardado anteriormente o si quiere empezar de nuevo
+	cout << "Quieres continuar una partida anterior o empezar de nuevo? (C: Cargar / N: Nueva partida)\n";
+	char partida = 'X';
+	cin >> partida;
+	while (partida != 'C' && partida != 'N') {
+		cout << "Introduce un valor valido para iniciar el juego\n";
+		cin >> partida;
 	}
-	while (columnas < 4) {
-		cout << "El numero de columnas con las que desea jugar es demasiado pequeño, el minimo aceptado es 4: \n";
-		cin >> columnas;
-	}
-	while (prop.maxThreadsPerBlock < (filas * columnas)) {
-		cout << "Has excedido el limite de semillas posibles para el tablero, introduce las filas y las columnas de nuevo: \n";
+	if (partida == 'N'){
+		//Recogemos los datos de filas y columnas del tablero que vamos a usar
 		cout << "Seleccione el numero de filas con las que desea jugar: \n";
 		cin >> filas;
 		cout << "Seleccione el numero de columnas con las que desea jugar: \n";
 		cin >> columnas;
+
+		//Tablero mínimo de 4 por 4
+		while (filas < 4) {
+			cout << "El numero de filas con las que desea jugar es demasiado pequeño, el minimo aceptado es 4: \n";
+			cin >> filas;
+		}
+		while (columnas < 4) {
+			cout << "El numero de columnas con las que desea jugar es demasiado pequeño, el minimo aceptado es 4: \n";
+			cin >> columnas;
+		}
+		while (prop.maxThreadsPerBlock < (filas * columnas)) {
+			cout << "Has excedido el limite de semillas posibles para el tablero, introduce las filas y las columnas de nuevo: \n";
+			cout << "Seleccione el numero de filas con las que desea jugar: \n";
+			cin >> filas;
+			cout << "Seleccione el numero de columnas con las que desea jugar: \n";
+			cin >> columnas;
+		}
+
+		//Reservamos la memoria del tablero y lo inicializamos con generar tablero
+		tablero = new int[filas * columnas];
+		generarTablero(tablero, filas, columnas);
+		modoManual(tablero, filas, columnas);
+
 	}
-
-	//Reservamos la memoria del tablero y lo inicializamos con generar tablero
-	tablero = new int[filas * columnas];
-	generarTablero(tablero, filas, columnas);
-	modoManual(tablero, filas, columnas);
-
-    
+	else {
+		cargarPartida();
+	}
 	system("PAUSE");
 }
 
@@ -195,12 +212,22 @@ __device__ void compruebaSemillas(int *tablero, int fila, int columna, int filas
 __device__ void moverCeros(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	for (int i = filas - 1; i > 0; i--){
+		for (int j = i; j > 0; j--){
+			if (tablero[(j * columnas) + columna] != 0 && tablero[((j - 1) * columnas) + columna] == 0){
+				tablero[((j - 1) * columnas) + columna] = tablero[(j * columnas) + columna];
+				tablero[(j * columnas) + columna] = 0;
+			}
+		}
+	}
+
+	/*
+	for (int i = filas - 1; i > 0; i--){
 		if (tablero[(i * columnas) + columna] == 0){
 			tablero[(i * columnas) + columna] = tablero[((i - 1) * columnas) + columna];
 			tablero[((i - 1) * columnas) + columna] = 0;
 		}
 
-	}
+	}*/
 	/*for (int i = filas - 1; i > 0; i--){
 	if (tablero[((i - 1) * columnas) + columna] != 0){
 	int a = i;
@@ -269,16 +296,80 @@ __global__ void juegoManual(int *tablero, int filas, int columnas, char movimien
 
 }
 
+void guardarPartida(int *tablero, int filas, int columnas/*, int dificultad*/) {
+	ofstream doc;
+	doc.open("partida.txt");
+	doc << filas << "\n";
+	doc << columnas << "\n";
+	//doc << dificultad << "\n";
+	for (int i = 0; i < filas * columnas; i++) {
+		doc << tablero[i] << " ";
+	}
+	doc.close();
+	system("cls");
+	cout << "Guardado correctamente.\n\n";
+}
+
+void cargarPartida() { //NO FUNCIONA LEÑE
+
+	const string fichero = "partida.txt";
+	ifstream leer;
+	leer.open(fichero.c_str());
+	int  d, *tablero;
+	int i = 0;
+	int n = 48;
+	int f = 0;
+	int c = 0;
+	char fila[80];
+	if (!leer.fail()) {
+		leer.getline(fila, 80, '\n');
+		while (n > 47 && n < 58) {
+			n = (int)fila[i];
+			i++;
+			if (n > 47 && n < 58) {
+				f = f * 10 + (n - 48);
+			}
+		}
+
+	}
+	n = 48;
+	i = 0;
+	if (!leer.fail()) {
+		leer.getline(fila, 80, '\n');
+		while (n > 47 && n < 58) {
+			n = (int)fila[i];
+			i++;
+			if (n > 47 && n < 58) {
+				c = c * 10 + (n - 48);
+			}
+		}
+
+	}
+	if (!leer.fail()) {
+		leer.getline(fila, 80, '\n');
+		d = (int)fila[0] - 48;
+	}
+
+
+	tablero = new int[f*c];
+	for (int i = 0; i < f * c; i++) {
+		leer.getline(fila, 80, ' ');
+		tablero[i] = (int)fila[0] - 48;
+	}
+	leer.close();
+	modoManual(tablero, f, c);
+}
+
 void modoManual(int *tablero, int filas, int columnas){
 
 	//system("cls");
 	char movimiento = ' ';
-	while (movimiento != ESCAPE){
+	while (movimiento != 'Z'){
 		imprimirTablero(tablero, filas, columnas);
 		cout << "Pulsa W, A, S o D para mover los numeros (Z para salir): \n";
 		cin >> movimiento;
 		//while (movimiento != (ARRIBA || ABAJO || IZQUIERDA || DERECHA)) {
-		while (movimiento != 'W' && movimiento != 'S' && movimiento != 'A' && movimiento != 'D') {
+		while (movimiento != 'W' && movimiento != 'S' && movimiento != 'A' && movimiento != 'D' && movimiento != 'Z') {
 			cout << "Tecla no valida, introduzca una valida:\n";
 			cin >> movimiento;
 		}
@@ -299,5 +390,18 @@ void modoManual(int *tablero, int filas, int columnas){
 
 	}
 	//system("cls");
-
+	cout << "Deseas guardar la partida? (S/N)\n";
+	char guardar = 'x';
+	cin >> guardar;
+	while (guardar != 'S' && guardar != 'N') {
+		system("cls");
+		cout << "Valor no valido, quieres guardar la partida? (S/N): \n";
+		cin >> guardar;
+	}
+	if (guardar == 'S') {
+		guardarPartida(tablero, filas, columnas/*, dificultad*/);
+	}
+	else {
+		cout << "Saliendo sin guardar...\n \n";
+	}
 }

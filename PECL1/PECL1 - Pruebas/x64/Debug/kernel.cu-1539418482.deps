@@ -396,6 +396,9 @@ C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\cerrno
 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\errno.h
 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\crtdefs.h
 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\share.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include\device_functions.h
+c:\program files\nvidia gpu computing toolkit\cuda\v9.1\include\crt/device_functions.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.1\include\cuda_runtime_api.h
 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\conio.h
 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\crtdefs.h
 C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\include\fstream
