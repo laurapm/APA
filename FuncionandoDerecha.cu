@@ -115,7 +115,6 @@ void generarTablero(int *tablero, int filas, int columnas, int dificultad){
 		tablero[i] = 0;
 	}
 	generarSemillas(tablero, filas, columnas, dificultad);
-	/**/
 }
 
 //Genera los números para jugar en el tablero
@@ -149,7 +148,6 @@ void generarSemillas(int *tablero, int filas, int columnas, int dificultad){
 	while (contador < 3){
 		int aux = rand() % 3;
 		int i = rand() % tamaño;
-		//cout << "POSICION: " << i+1 << "\n";
 		if (tablero[i] == 0){
 			switch (aux){
 			case 0:
@@ -233,6 +231,7 @@ void imprimirTablero(int *tablero, int filas, int columnas) {
 	}
 }
 
+//En función del movimiento, llama a la comprobación correspondiente
 __device__ void compruebaSemillas(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	switch (movimiento){
@@ -252,7 +251,7 @@ __device__ void compruebaSemillas(int *tablero, int fila, int columna, int filas
 
 }
 
-
+//Desplaza los números respecto a los ceros que haya, en función del movimiento
 __device__ void moverCeros(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 	if (movimiento == 'W'){
 		for (int i = filas - 1; i > 0; i--){
@@ -297,6 +296,7 @@ __device__ void moverCeros(int *tablero, int fila, int columna, int filas, int c
 	}
 }
 
+//Comprueba hacia arriba
 __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
@@ -307,6 +307,7 @@ __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, 
 	}
 }
 
+//Comprueba hacia abajo
 __device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
@@ -318,6 +319,7 @@ __device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, i
 
 }
 
+//Comprueba hacia la derecha
 __device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
@@ -329,6 +331,7 @@ __device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas,
 
 }
 
+//Comprueba hacia la izquierda
 __device__ void compruebaIzquierda(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
@@ -352,6 +355,7 @@ __global__ void juegoManual(int *tablero, int filas, int columnas, char movimien
 
 }
 
+//Guarda la partida con el tablero, las filas, las columnas y la dificultad
 void guardarPartida(int *tablero, int filas, int columnas, int dificultad) {
 	ofstream doc;
 	doc.open("partida.txt");
@@ -366,6 +370,7 @@ void guardarPartida(int *tablero, int filas, int columnas, int dificultad) {
 	cout << "Guardado correctamente.\n\n";
 }
 
+//Carga la partida guardada
 void cargarPartida() {
 
 	const string fichero = "partida.txt";
