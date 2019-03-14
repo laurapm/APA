@@ -18,7 +18,7 @@ void generarTablero(int *tablero, int filas, int columnas, int dificultad);
 void imprimirTablero(int *tablero, int filas, int columnas);
 void imprimirColumnas(int columnas);
 void generarSemillas(int *tablero, int filas, int columnas, int dificultad);
-void guardarPartida(int *tablero, int filas, int columnas/*, int dificultad*/);
+void guardarPartida(int *tablero, int filas, int columnas, int dificultad);
 void cargarPartida();
 void modoManual(int *tablero, int filas, int columnas, int dificultad);
 
@@ -29,7 +29,6 @@ __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, 
 __device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
 __device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
 __device__ void compruebaIzquierda(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
-//AUX
 __device__ void moverCeros(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
 
 int main(void){
@@ -136,7 +135,7 @@ void generarSemillas(int *tablero, int filas, int columnas, int dificultad){
 	if (dificultad == 2){
 	int semillas = 0;
 	int valores[3] = { 2, 4 };
-	while (semillas < 15){
+	while (semillas < 8){
 	int posicion = rand() % (filas*columnas + 1);
 	int valor = rand() % 2;
 	if (tablero[posicion] == 0){
@@ -296,25 +295,6 @@ __device__ void moverCeros(int *tablero, int fila, int columna, int filas, int c
 			}
 		}
 	}
-
-	/*
-	for (int i = filas - 1; i > 0; i--){
-	if (tablero[(i * columnas) + columna] == 0){
-	tablero[(i * columnas) + columna] = tablero[((i - 1) * columnas) + columna];
-	tablero[((i - 1) * columnas) + columna] = 0;
-	}
-
-	}*/
-	/*for (int i = filas - 1; i > 0; i--){
-	if (tablero[((i - 1) * columnas) + columna] != 0){
-	int a = i;
-	while (tablero[((a - 1) * columnas) + columna] == 0){
-	tablero[(a * columnas) + columna] = tablero[((a - 1) * columnas) + columna];
-	tablero[((a - 1) * columnas) + columna] = 0;
-	}
-	}
-	}*/
-
 }
 
 __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
@@ -325,7 +305,6 @@ __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, 
 		tablero[((fila - 1) * columnas) + columna] = 0;
 		moverCeros(tablero, fila, columna, filas, columnas, movimiento);
 	}
-	//compruebaArriba(tablero, fila - 1, columna, filas, columnas);
 }
 
 __device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
@@ -373,12 +352,12 @@ __global__ void juegoManual(int *tablero, int filas, int columnas, char movimien
 
 }
 
-void guardarPartida(int *tablero, int filas, int columnas/*, int dificultad*/) {
+void guardarPartida(int *tablero, int filas, int columnas, int dificultad) {
 	ofstream doc;
 	doc.open("partida.txt");
 	doc << filas << "\n";
 	doc << columnas << "\n";
-	//doc << dificultad << "\n";
+	doc << dificultad << "\n";
 	for (int i = 0; i < filas * columnas; i++) {
 		doc << tablero[i] << " ";
 	}
@@ -387,7 +366,7 @@ void guardarPartida(int *tablero, int filas, int columnas/*, int dificultad*/) {
 	cout << "Guardado correctamente.\n\n";
 }
 
-void cargarPartida() { //NO FUNCIONA LEÑE
+void cargarPartida() {
 
 	const string fichero = "partida.txt";
 	ifstream leer;
@@ -434,7 +413,7 @@ void cargarPartida() { //NO FUNCIONA LEÑE
 		tablero[i] = (int)fila[0] - 48;
 	}
 	leer.close();
-	//modoManual(tablero, f, c);
+	modoManual(tablero, f, c, d);
 }
 
 void modoManual(int *tablero, int filas, int columnas, int dificultad){
@@ -476,7 +455,7 @@ void modoManual(int *tablero, int filas, int columnas, int dificultad){
 		cin >> guardar;
 	}
 	if (guardar == 'S') {
-		guardarPartida(tablero, filas, columnas/*, dificultad*/);
+		guardarPartida(tablero, filas, columnas, dificultad);
 	}
 	else {
 		cout << "Saliendo sin guardar...\n \n";
