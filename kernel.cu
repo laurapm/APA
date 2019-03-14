@@ -14,13 +14,14 @@ using namespace std;
 
 //Funciones que van a utilizarse a lo largo del programa
 //CPU
-void generarTablero(int *tablero, int filas, int columnas);
+void generarTablero(int *tablero, int filas, int columnas, int dificultad);
 void imprimirTablero(int *tablero, int filas, int columnas);
 void imprimirColumnas(int columnas);
-void generarSemillas(int *tablero, int filas, int columnas);
-void guardarPartida(int *tablero, int filas, int columnas/*, int dificultad*/);
+void comprobarLleno(int *tablero, int filas, int columnas, int dificultad, bool &salida);
+void generarSemillas(int *tablero, int filas, int columnas, int dificultad);
+void guardarPartida(int *tablero, int filas, int columnas, int dificultad);
 void cargarPartida();
-void modoManual(int *tablero, int filas, int columnas);
+void modoManual(int *tablero, int filas, int columnas, int dificultad);
 
 //GPU
 __global__ void juegoManual(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
@@ -29,7 +30,6 @@ __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, 
 __device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
 __device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
 __device__ void compruebaIzquierda(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
-//AUX
 __device__ void moverCeros(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
 
 int main(void){
@@ -43,6 +43,7 @@ int main(void){
 	int filas = 0;
 	int columnas = 0;
 	int dificultad = 0;
+	char modo_juego;
 
 	//Preguntamos si quiere cargar un juego guardado anteriormente o si quiere empezar de nuevo
 	cout << "Quieres continuar una partida anterior o empezar de nuevo? (C: Cargar / N: Nueva partida)\n";
@@ -76,10 +77,29 @@ int main(void){
 			cin >> columnas;
 		}
 
+		cout << "Elija dificultad: \n1. Bajo, se lanzaran 15 semillas de 2, 4 y 8 \n"
+			"2. Dificil, se lanzaran 8 semillas de 2 y 4 \n";
+		cin >> dificultad;
+
+
+		while (!(dificultad == 1 || dificultad == 2)){
+			cout << "Dificultad no válida \n";
+			cout << "Selecccione 1 si desea jugar con nivel o 2 si desea jugar con nivel dificil \n";
+			cin >> dificultad;
+		}
+
+		cout << "Elija modo de juego: \n A. Automático \n M. Manual \n";
+		cin >> modo_juego;
+		while (!(modo_juego == 'M' || modo_juego == 'A')){
+			cout << "Modo de juego no válido \n";
+			cout << "Selecccione A para jugar en modo automático o M para manual \n";
+			cin >> modo_juego;
+		}
+
 		//Reservamos la memoria del tablero y lo inicializamos con generar tablero
 		tablero = new int[filas * columnas];
-		generarTablero(tablero, filas, columnas);
-		modoManual(tablero, filas, columnas);
+		generarTablero(tablero, filas, columnas, dificultad);
+		modoManual(tablero, filas, columnas, dificultad);
 
 	}
 	else {
@@ -89,23 +109,79 @@ int main(void){
 }
 
 //Generar tablero con números aleatorios
-void generarTablero(int *tablero, int filas, int columnas){
+void generarTablero(int *tablero, int filas, int columnas, int dificultad){
 	srand(time(0));
 	int tamaño = filas * columnas;
 	for (int i = 0; i < tamaño; i++){
 		tablero[i] = 0;
 	}
-	generarSemillas(tablero, filas, columnas);
+	generarSemillas(tablero, filas, columnas, dificultad);
+}
+
+void comprobarLleno(int *tablero, int filas, int columnas, int dificultad, bool &salida){
+
+	int tamaño = filas * columnas;
+	int contador, posicion = 0;
+	if (dificultad == 1){
+		contador = 15;
+		while (contador > 0 && posicion < tamaño){
+			if (tablero[posicion] == 0) contador--;
+			posicion++;
+		}
+		if (contador == 0) generarSemillas(tablero, filas, columnas, dificultad);
+		else{
+			cout << "Juego terminado\n";
+			//exit(0);
+			salida = true;
+		}
+	}
+	if (dificultad == 2){
+		contador = 8;
+		while (contador > 0 && posicion < tamaño){
+			if (tablero[posicion] == 0) contador--;
+			posicion++;
+		}
+		if (contador == 0) generarSemillas(tablero, filas, columnas, dificultad);
+		else{
+			cout << "Juego terminado\n";
+			//exit(0);
+			salida = true;
+		}
+	}
+
 }
 
 //Genera los números para jugar en el tablero
-void generarSemillas(int *tablero, int filas, int columnas){
+void generarSemillas(int *tablero, int filas, int columnas, int dificultad){
+	if (dificultad == 1){
+	int semillas = 0;
+	int valores[3] = { 2, 4, 8 };
+	while (semillas < 15){
+	int posicion = rand() % (filas*columnas + 1);
+	int valor = rand() % 3;
+	if (tablero[posicion] == 0){
+	tablero[posicion] = valores[valor];
+	semillas++;
+	}
+	}
+	}
+	if (dificultad == 2){
+	int semillas = 0;
+	int valores[3] = { 2, 4 };
+	while (semillas < 8){
+	int posicion = rand() % (filas*columnas + 1);
+	int valor = rand() % 2;
+	if (tablero[posicion] == 0){
+	tablero[posicion] = valores[valor];
+	semillas++;
+	}
+	}
+	}/*
 	int tamaño = filas * columnas;
 	int contador = 0;
 	while (contador < 3){
 		int aux = rand() % 3;
 		int i = rand() % tamaño;
-		//cout << "POSICION: " << i+1 << "\n";
 		if (tablero[i] == 0){
 			switch (aux){
 			case 0:
@@ -120,7 +196,7 @@ void generarSemillas(int *tablero, int filas, int columnas){
 			}
 			contador++;
 		}
-	}
+	}*/
 }
 
 //Función que imprime el número de columnas que va a tener el tablero para que sea más facil elegir semillas
@@ -189,6 +265,7 @@ void imprimirTablero(int *tablero, int filas, int columnas) {
 	}
 }
 
+//En función del movimiento, llama a la comprobación correspondiente
 __device__ void compruebaSemillas(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	switch (movimiento){
@@ -208,6 +285,7 @@ __device__ void compruebaSemillas(int *tablero, int fila, int columna, int filas
 
 }
 
+//Desplaza los números respecto a los ceros que haya, en función del movimiento
 __device__ void moverCeros(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 	if (movimiento == 'W'){
 		for (int i = filas - 1; i > 0; i--){
@@ -219,7 +297,7 @@ __device__ void moverCeros(int *tablero, int fila, int columna, int filas, int c
 			}
 		}
 	}
-	if (movimiento == 'S'){
+	else if (movimiento == 'S'){
 		for (int i = 0; i < filas - 1; i++){
 			for (int j = i; j < filas - 1; j++){
 				if (tablero[(j * columnas) + columna] != 0 && tablero[((j + 1) * columnas) + columna] == 0){
@@ -229,52 +307,30 @@ __device__ void moverCeros(int *tablero, int fila, int columna, int filas, int c
 			}
 		}
 	}
-	if (movimiento == 'D'){
-		for (int i = 0; i < columnas; i++)
-		{
-			for (int j = 0; j < columnas - 1; j++)
-			{
-				// Current cell NOT 0 and lower cell IS 0 ->
-				// moves current cell down
-				if (tablero[fila * filas + j] != 0 &&
-					tablero[fila * filas + (j + 1)] == 0)
-				{
-					tablero[fila * filas + (j + 1)] = tablero[fila * filas + j];
-					tablero[fila * filas + j] = 0;
+	else if (movimiento == 'D'){
+		for (int i = 0; i < columnas - 1; i++){
+			for (int j = i; j < columnas - 1; j++){
+				if (tablero[fila * columnas + j] != 0 && tablero[fila * columnas + (j + 1)] == 0 && tablero[fila * columnas + (j + 1)] != columnas){
+					tablero[fila * columnas + (j + 1)] = tablero[fila * columnas + j];
+					tablero[fila * columnas + j] = 0;
 				}
 			}
 		}
 	}
 
-	if (movimiento == 'A'){
+	else if (movimiento == 'A'){
 		for (int i = columnas - 1; i > 0; i--){
-			for (int j = columnas - 1; j > 0; j--){
-				if (tablero[fila*filas + j] != 0 && tablero[filas*filas + (j - 1)] == 0){
-					tablero[fila * filas + (j - 1)] = tablero[fila * filas + j];
-					tablero[fila * filas + j] = 0;
+			for (int j = i; j > 0; j--){
+				if (tablero[fila * columnas + j] != 0 && tablero[fila * columnas + (j - 1)] == 0){
+					tablero[fila * columnas + (j - 1)] = tablero[fila * columnas + j];
+					tablero[fila * columnas + j] = 0;
 				}
 			}
 		}
 	}
 }
-	/*
-	for (int i = filas - 1; i > 0; i--){
-	if (tablero[(i * columnas) + columna] == 0){
-	tablero[(i * columnas) + columna] = tablero[((i - 1) * columnas) + columna];
-	tablero[((i - 1) * columnas) + columna] = 0;
-	}
-	}*/
-	/*for (int i = filas - 1; i > 0; i--){
-	if (tablero[((i - 1) * columnas) + columna] != 0){
-	int a = i;
-	while (tablero[((a - 1) * columnas) + columna] == 0){
-	tablero[(a * columnas) + columna] = tablero[((a - 1) * columnas) + columna];
-	tablero[((a - 1) * columnas) + columna] = 0;
-	}
-	}
-	}*/
 
-
+//Comprueba hacia arriba
 __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
@@ -283,9 +339,9 @@ __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, 
 		tablero[((fila - 1) * columnas) + columna] = 0;
 		moverCeros(tablero, fila, columna, filas, columnas, movimiento);
 	}
-	//compruebaArriba(tablero, fila - 1, columna, filas, columnas);
 }
 
+//Comprueba hacia abajo
 __device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
@@ -297,23 +353,25 @@ __device__ void compruebaAbajo(int *tablero, int fila, int columna, int filas, i
 
 }
 
+//Comprueba hacia la derecha
 __device__ void compruebaDerecha(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
-	if (tablero[(fila * filas) + columna] != 0 && tablero[(fila * filas) + columna] == tablero[(fila * filas) + (columna + 1)]){
-		tablero[(fila * filas) + columna] = tablero[(fila * filas) + columna] * 2;
-		tablero[(fila * filas) + (columna + 1)] = 0;
+	if (tablero[(fila * columnas) + columna] != 0 && tablero[(fila * columnas) + columna] == tablero[(fila * columnas) + (columna + 1)]){
+		tablero[(fila * columnas) + columna] = tablero[(fila * columnas) + columna] * 2;
+		tablero[(fila * columnas) + (columna + 1)] = 0;
 		moverCeros(tablero, fila, columna, filas, columnas, movimiento);
 	}
 
 }
 
+//Comprueba hacia la izquierda
 __device__ void compruebaIzquierda(int *tablero, int fila, int columna, int filas, int columnas, char movimiento){
 
 	moverCeros(tablero, fila, columna, filas, columnas, movimiento);
-	if (tablero[(fila * filas) + columna] != 0 && tablero[(fila * filas) + columna] == tablero[(fila * filas) + (columna - 1)]){
-		tablero[(fila * filas) + columna] = tablero[(fila * filas) + columna] * 2;
-		tablero[(fila * filas) + (columna - 1)] = 0;
+	if (tablero[(fila * columnas) + columna] != 0 && tablero[(fila * columnas) + columna] == tablero[(fila * columnas) + (columna - 1)]){
+		tablero[(fila * columnas) + columna] = tablero[(fila * columnas) + columna] * 2;
+		tablero[(fila * columnas) + (columna - 1)] = 0;
 		moverCeros(tablero, fila, columna, filas, columnas, movimiento);
 	}
 
@@ -322,21 +380,22 @@ __device__ void compruebaIzquierda(int *tablero, int fila, int columna, int fila
 __global__ void juegoManual(int *tablero, int filas, int columnas, char movimiento){
 
 	//Guardamos la columna y la fila del hilo
-	int columnaHilo = threadIdx.x + blockIdx.x;
-	int filaHilo = threadIdx.y + blockIdx.y;
-	
-	compruebaSemillas(tablero, filaHilo, filaHilo, filas, columnas, movimiento);
+	int columnaHilo = threadIdx.x;
+	int filaHilo = threadIdx.y;
+
+	compruebaSemillas(tablero, filaHilo, columnaHilo, filas, columnas, movimiento);
 
 	__syncthreads();
 
 }
 
-void guardarPartida(int *tablero, int filas, int columnas/*, int dificultad*/) {
+//Guarda la partida con el tablero, las filas, las columnas y la dificultad
+void guardarPartida(int *tablero, int filas, int columnas, int dificultad) {
 	ofstream doc;
 	doc.open("partida.txt");
 	doc << filas << "\n";
 	doc << columnas << "\n";
-	//doc << dificultad << "\n";
+	doc << dificultad << "\n";
 	for (int i = 0; i < filas * columnas; i++) {
 		doc << tablero[i] << " ";
 	}
@@ -345,7 +404,8 @@ void guardarPartida(int *tablero, int filas, int columnas/*, int dificultad*/) {
 	cout << "Guardado correctamente.\n\n";
 }
 
-void cargarPartida() { //NO FUNCIONA LEÑE
+//Carga la partida guardada
+void cargarPartida() {
 
 	const string fichero = "partida.txt";
 	ifstream leer;
@@ -392,14 +452,15 @@ void cargarPartida() { //NO FUNCIONA LEÑE
 		tablero[i] = (int)fila[0] - 48;
 	}
 	leer.close();
-	modoManual(tablero, f, c);
+	modoManual(tablero, f, c, d);
 }
 
-void modoManual(int *tablero, int filas, int columnas){
+void modoManual(int *tablero, int filas, int columnas, int dificultad){
 
 	//system("cls");
 	char movimiento = ' ';
-	while (movimiento != 'Z'){
+	bool salida = false;
+	while (movimiento != 'Z' && salida == false){
 		imprimirTablero(tablero, filas, columnas);
 		cout << "Pulsa W, A, S o D para mover los numeros (Z para salir): \n";
 		cin >> movimiento;
@@ -420,7 +481,7 @@ void modoManual(int *tablero, int filas, int columnas){
 		juegoManual << < DimGrid, DimBlock >> > (tablero_gpu, filas, columnas, movimiento);
 		cudaMemcpy(tablero, tablero_gpu, sizeof(int)* filas * columnas, cudaMemcpyDeviceToHost);
 		//system("cls");
-		generarSemillas(tablero, filas, columnas);
+		comprobarLleno(tablero, filas, columnas, dificultad, salida);
 		cudaFree(tablero_gpu);
 
 	}
@@ -434,7 +495,7 @@ void modoManual(int *tablero, int filas, int columnas){
 		cin >> guardar;
 	}
 	if (guardar == 'S') {
-		guardarPartida(tablero, filas, columnas/*, dificultad*/);
+		guardarPartida(tablero, filas, columnas, dificultad);
 	}
 	else {
 		cout << "Saliendo sin guardar...\n \n";
