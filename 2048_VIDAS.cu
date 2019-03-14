@@ -26,7 +26,7 @@ void modoAutomatico(int *tablero, int filas, int columnas, int dificultad, int v
 void iniciar_partida(int vidas);
 
 //GPU
-__global__ void juegoManual(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
+__global__ void juego(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
 
 __device__ void compruebaSemillas(int *tablero, int filas, int columnas, char movimiento);
 __device__ void compruebaArriba(int *tablero, int fila, int columna, int filas, int columnas, char movimiento);
@@ -322,7 +322,7 @@ void generarSemillas(int *tablero, int filas, int columnas, int dificultad){
 	 }*/
 }
 
-//Función que imprime el número de columnas que va a tener el tablero para que sea más facil elegir semillas
+//Función que imprime el número de columnas que va a tener el tablero 
 void imprimirColumnas(int columnas) {
 	for (int i = 0; i < columnas; i++) {
 		if (i == 0) {
@@ -506,7 +506,7 @@ __device__ void compruebaIzquierda(int *tablero, int fila, int columna, int fila
 
 }
 
-__global__ void juegoManual(int *tablero, int filas, int columnas, char movimiento){
+__global__ void juego(int *tablero, int filas, int columnas, char movimiento){
 
 	//Guardamos la columna y la fila del hilo
 	int columnaHilo = threadIdx.x;
@@ -585,7 +585,7 @@ void cargarPartida() {
 	modoManual(tablero, f, c, d, v);
 }
 
-void modoManual(int *tablero, int filas, int columnas, int dificultad, int vidas){
+void modoManual(int *tablero, int filas, int columnas, int dificultad,int vidas){
 
 	//system("cls");
 	char movimiento = ' ';
@@ -608,7 +608,7 @@ void modoManual(int *tablero, int filas, int columnas, int dificultad, int vidas
 		//Creamos los hilos en un solo bloque
 		dim3 DimGrid(1, 1);
 		dim3 DimBlock(filas, columnas);
-		juegoManual << < DimGrid, DimBlock >> > (tablero_gpu, filas, columnas, movimiento);
+		juego << < DimGrid, DimBlock >> > (tablero_gpu, filas, columnas, movimiento);
 		cudaMemcpy(tablero, tablero_gpu, sizeof(int)* filas * columnas, cudaMemcpyDeviceToHost);
 		//system("cls");
 		comprobarLleno(tablero, filas, columnas, dificultad, salida, vidas);
@@ -636,7 +636,7 @@ void modoManual(int *tablero, int filas, int columnas, int dificultad, int vidas
 void modoAutomatico(int *tablero, int filas, int columnas, int dificultad, int vidas){
 
 	//system("cls");
-
+	
 	bool salida = false;
 	while (salida == false){
 		imprimirTablero(tablero, filas, columnas, vidas);
@@ -644,20 +644,20 @@ void modoAutomatico(int *tablero, int filas, int columnas, int dificultad, int v
 		char movimientos[4] = { 'W', 'S', 'D', 'A' };
 		int mov = rand() % 4;
 		char movimiento = movimientos[mov];
-		cout << "El siguiente movimiento a realizar es: \n"<< movimiento;
+		cout << movimiento;
 		cout << "\n ";
 		//while (movimiento != (ARRIBA || ABAJO || IZQUIERDA || DERECHA)) {
 		//CUDA
-
+		
 		int *tablero_gpu;
 		//Reservamos memoria y copiamos tablero en GPU
 		cudaMalloc((void**)&tablero_gpu, (filas * columnas) * sizeof(int));
 		cudaMemcpy(tablero_gpu, tablero, (filas * columnas) * sizeof(int), cudaMemcpyHostToDevice);
 		//Creamos los hilos en un solo bloque
-		
+		cout << "comienza el juego";
 		dim3 DimGrid(1, 1);
 		dim3 DimBlock(filas, columnas);
-		juegoManual << < DimGrid, DimBlock >> > (tablero_gpu, filas, columnas, movimiento);
+		juego<<< DimGrid, DimBlock >> > (tablero_gpu, filas, columnas, movimiento);
 		cudaMemcpy(tablero, tablero_gpu, sizeof(int)* filas * columnas, cudaMemcpyDeviceToHost);
 		//system("cls");
 		comprobarLleno(tablero, filas, columnas, dificultad, salida, vidas);
