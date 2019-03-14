@@ -15,7 +15,7 @@ using namespace std;
 //Funciones que van a utilizarse a lo largo del programa
 //CPU
 void generarTablero(int *tablero, int filas, int columnas, int dificultad, int vidas);
-void imprimirTablero(int *tablero, int filas, int columnas);
+void imprimirTablero(int *tablero, int filas, int columnas, int vidas);
 void imprimirColumnas(int columnas);
 int comprobarLleno(int *tablero, int filas, int columnas, int dificultad, bool &salida, int vidas);
 void generarSemillas(int *tablero, int filas, int columnas, int dificultad);
@@ -350,9 +350,15 @@ void imprimirColumnas(int columnas) {
 }
 
 //Imprimimos el tablero
-void imprimirTablero(int *tablero, int filas, int columnas) {
+void imprimirTablero(int *tablero, int filas, int columnas, int vidas) {
 	cout << "SE HAN GENERADO " << filas << " FILAS Y " << columnas << " COLUMNAS\n";
 	cout << "+-+-+-TABLERO DE JUEGO-+-+-+\n\n";
+	cout << "VIDAS :";
+	for (int i = 0; i < vidas; i++){
+		cout << "<3";
+	}
+	cout << "\n";
+
 	imprimirColumnas(columnas);
 	for (int i = 0; i < filas; i++) {
 		if (i < 9) {
@@ -579,13 +585,13 @@ void cargarPartida() {
 	modoManual(tablero, f, c, d, v);
 }
 
-void modoManual(int *tablero, int filas, int columnas, int dificultad,int vidas){
+void modoManual(int *tablero, int filas, int columnas, int dificultad, int vidas){
 
 	//system("cls");
 	char movimiento = ' ';
 	bool salida = false;
 	while (movimiento != 'Z' && salida == false){
-		imprimirTablero(tablero, filas, columnas);
+		imprimirTablero(tablero, filas, columnas, vidas);
 		cout << "Pulsa W, A, S o D para mover los numeros (Z para salir): \n";
 		cin >> movimiento;
 		//while (movimiento != (ARRIBA || ABAJO || IZQUIERDA || DERECHA)) {
@@ -630,22 +636,25 @@ void modoManual(int *tablero, int filas, int columnas, int dificultad,int vidas)
 void modoAutomatico(int *tablero, int filas, int columnas, int dificultad, int vidas){
 
 	//system("cls");
-	
+
 	bool salida = false;
 	while (salida == false){
+		imprimirTablero(tablero, filas, columnas, vidas);
+
 		char movimientos[4] = { 'W', 'S', 'D', 'A' };
 		int mov = rand() % 4;
 		char movimiento = movimientos[mov];
-		cout << movimiento;
+		cout << "El siguiente movimiento a realizar es: \n"<< movimiento;
 		cout << "\n ";
 		//while (movimiento != (ARRIBA || ABAJO || IZQUIERDA || DERECHA)) {
 		//CUDA
+
 		int *tablero_gpu;
 		//Reservamos memoria y copiamos tablero en GPU
 		cudaMalloc((void**)&tablero_gpu, (filas * columnas) * sizeof(int));
 		cudaMemcpy(tablero_gpu, tablero, (filas * columnas) * sizeof(int), cudaMemcpyHostToDevice);
 		//Creamos los hilos en un solo bloque
-		cout << "comienza el juego";
+		
 		dim3 DimGrid(1, 1);
 		dim3 DimBlock(filas, columnas);
 		juegoManual << < DimGrid, DimBlock >> > (tablero_gpu, filas, columnas, movimiento);
