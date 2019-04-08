@@ -36,23 +36,24 @@ object juego2048 {
     case 4 => return (17,17)
     //case default => println("La dificultad seleccionada no es válida")
   }
-  
+  //función ecaragada de crear un tablero vacío en función de la 
+  //dificultad indicada
   def crearTablero(tam:Int):List[Int] = {
-     if (tam==0) return 0::Nil
+     if (tam==0) return Nil
      else
        return 0::crearTablero(tam-1)
   }
-  //Metodo para generar el tablero en base a una matriz
-  def generarSemillas(tablero:List[Int], dificultad:Int, tam:Int, posicion:Int):List[Int]= dificultad match{
+  //Método que genera una semilla y la introduce en el tablero
+  def generarSemillas(tablero:List[Int], dificultad:Int, posicion:Int):List[Int]= dificultad match{
     case 1 => {
       //val posicion = Random.nextInt(tam+1)
       if (tablero == Nil) return tablero
       else{
-        if (tablero.head == posicion) {
+        if (posicion == 0) {
           return 2::tablero.tail
         }
         else{
-          return tablero.head::generarSemillas(tablero.tail, dificultad, tam, posicion)
+          return tablero.head::generarSemillas(tablero, dificultad,  posicion-1)
         }
       }
     }
@@ -68,6 +69,8 @@ object juego2048 {
     //}
   //}
     
+  //Método para imprimir el número de las columnas 
+  //con la finalidad de agilizar el testeo de datos
   def imprimir_cabeceras(dificultad:Int)= dificultad match{
     case 1 => {
       println("	1	2	3	4")
@@ -136,8 +139,26 @@ object juego2048 {
       else  return 6
         
   }
+ 
+ def mover (movimiento:Int, tablero:List[Int], filas:Int, columnas:Int) = movimiento match {
+   case 2 =>
+   case 4 =>
+   case 6 =>
+   case 8 =>
+   case _ =>
+ }
   
+ //método principal del juego
   def jugar(tablero:List[Int], filas:Int, columnas:Int, dificultad:Int) = dificultad match{
-    case 1 => imprimir_tablero(filas,0,columnas,0, dificultad, tablero)
+    case 1 =>{ imprimir_tablero(filas,0,columnas,0, dificultad, generarSemillas(tablero, dificultad, 3))
+      println("___________")
+      println(generarSemillas(tablero, dificultad,  3))
+      if (tablero!= Nil){
+        //realizar movimiento + llamada recursiva a jugar
+        val movimiento = readInt()
+        mover(movimiento, tablero, filas, columnas)
+      }
+      
+    }
   }
 }
