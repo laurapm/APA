@@ -88,25 +88,39 @@ object juego2048 {
   }
   
   def imprimir_tablero(filas:Int, fil:Int, columnas:Int, col:Int, dificultad:Int, tablero:List[Int]): Unit= {
-    if(tablero==Nil) println("")
-    else if (col == 0){
-      if(fil ==0){
-        imprimir_cabeceras(dificultad)
-        imprimir_tablero(filas, fil+1, columnas, col, dificultad, tablero.tail)
-      }
-      else {
-            if(fil<=filas && fil!=0){
-              printf((fil) + "---" + dar_color (tablero.head)) 
-              println("")
-              imprimir_tablero(filas, fil+1, columnas, col, dificultad, tablero.tail)
-            }
-      }
+    
+    if(tablero == Nil) println("")
+    else if(fil == 0){
+      
+      imprimir_cabeceras(dificultad)
+      imprimir_tablero(filas, fil+1, columnas, col, dificultad, tablero)
+      
     }
-    else if (col < columnas) imprimir_tablero(filas, fil+1, columnas, col+1, dificultad, tablero.tail)
     else{
-      println("") 
-      println(imprimir_tablero(filas, fil+1, columnas, 0, dificultad, tablero.tail))
+      
+      if(col == 0){  //Caso primera columna
+        
+        if(fil <= filas && fil!= 0){
+              printf((fil) + "---|   " + tablero.head + "   |")
+              imprimir_tablero(filas, fil, columnas, col+1, dificultad, tablero.tail)
+        }
+        
+      }
+      else if(col == columnas-1){ //Caso última columna
+        
+        println("   " + tablero.head + "   |")
+        imprimir_tablero(filas, fil+1, columnas, 0, dificultad, tablero.tail)
+        
+      }
+      else{  //Resto de casos
+        
+        printf("   " + tablero.head + "   |")
+        imprimir_tablero(filas, fil, columnas, col+1, dificultad, tablero.tail)
+        
+      }
+      
     }
+    
   }
   
  def dar_color(valores:Int):String ={
@@ -117,16 +131,13 @@ object juego2048 {
  }
  
  def colorear(dificultad:Int):Int={
-      if(dificultad==1) return 4
-      else if(dificultad==2) return 5
+      if(dificultad == 1) return 4
+      else if(dificultad == 2) return 5
       else  return 6
         
   }
-  
   
   def jugar(tablero:List[Int], filas:Int, columnas:Int, dificultad:Int) = dificultad match{
     case 1 => imprimir_tablero(filas,0,columnas,0, dificultad, tablero)
   }
 }
-  
-
