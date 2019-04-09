@@ -155,6 +155,20 @@ object juego2048 {
    else return tablero.head :: moverDer(tablero.tail, filas, columnas, posicion+1)
    
  }
+  
+ def traspuesta (tablero:List[Int], columnas: Int, count:Int, pos:Int):List[Int]={
+   if (tablero == Nil)
+     return tablero
+   else{
+     if (count ==0) return traspuesta(tablero.tail, columnas, columnas-1, 0)
+     else coger(pos*columnas, tablero)::traspuesta(tablero, columnas, count-1, pos+1)
+   }
+ }
+ 
+ def coger(n:Int, tablero:List[Int]):Int={
+   if (n==0) return tablero.head
+   else coger(n-1, tablero.tail)
+ }
  
  def mover (movimiento:Int, tablero:List[Int], filas:Int, columnas:Int) = movimiento match {
    case 2 =>
@@ -167,7 +181,8 @@ object juego2048 {
  //método principal del juego
   def jugar(tablero:List[Int], filas:Int, columnas:Int, dificultad:Int) = dificultad match{
     case 1 =>{
-      val tablerogen = generarSemillas(tablero, dificultad, 0)
+      val posSemilla = Random.nextInt(filas*columnas+1)
+      val tablerogen = generarSemillas(tablero, dificultad, posSemilla)
       imprimir_tablero(filas,0,columnas,0, dificultad, tablerogen)
       println("___________")
       println(generarSemillas(tablero, dificultad,  3))
@@ -176,7 +191,9 @@ object juego2048 {
         //val movimiento = readInt()
         //mover(movimiento, tablero, filas, columnas)
         imprimir_tablero(filas, 0, columnas, 0, dificultad, moverDer(tablerogen, filas, columnas, 0))
-        
+        //imprimir_tablero(filas, 0, columnas, 0, dificultad, traspuesta(tablero, columnas, columnas, 0))
+        println(coger(4, tablero))
+        println(traspuesta(List(0,2,4,2),2,2,0))
       }
       
     }
