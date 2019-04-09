@@ -39,7 +39,7 @@ object juego2048 {
   //función ecaragada de crear un tablero vacío en función de la 
   //dificultad indicada
   def crearTablero(tam:Int):List[Int] = {
-     if (tam==0) return Nil
+     if (tam == 0) return Nil
      else
        return 0::crearTablero(tam-1)
   }
@@ -53,7 +53,7 @@ object juego2048 {
           return 2::tablero.tail
         }
         else{
-          return tablero.head::generarSemillas(tablero, dificultad,  posicion-1)
+          return tablero.head::generarSemillas(tablero, dificultad, posicion-1)
         }
       }
     }
@@ -140,6 +140,22 @@ object juego2048 {
         
   }
  
+ def moverDer(tablero: List[Int], filas: Int, columnas: Int, posicion: Int):List[Int] ={
+   
+   if(tablero == Nil) return Nil
+   else if((posicion+1) % columnas == 0){
+     return tablero.head :: moverDer(tablero.tail, filas, columnas, posicion+1)
+   }
+   else if(tablero.head != 0){
+     
+     val aux = (tablero.head::tablero.tail.tail)
+     return 0 :: moverDer(aux, filas, columnas, posicion+1)
+     
+   }
+   else return tablero.head :: moverDer(tablero.tail, filas, columnas, posicion+1)
+   
+ }
+ 
  def mover (movimiento:Int, tablero:List[Int], filas:Int, columnas:Int) = movimiento match {
    case 2 =>
    case 4 =>
@@ -150,13 +166,17 @@ object juego2048 {
   
  //método principal del juego
   def jugar(tablero:List[Int], filas:Int, columnas:Int, dificultad:Int) = dificultad match{
-    case 1 =>{ imprimir_tablero(filas,0,columnas,0, dificultad, generarSemillas(tablero, dificultad, 3))
+    case 1 =>{
+      val tablerogen = generarSemillas(tablero, dificultad, 0)
+      imprimir_tablero(filas,0,columnas,0, dificultad, tablerogen)
       println("___________")
       println(generarSemillas(tablero, dificultad,  3))
-      if (tablero!= Nil){
-        //realizar movimiento + llamada recursiva a jugar
-        val movimiento = readInt()
-        mover(movimiento, tablero, filas, columnas)
+      if (tablero != Nil){
+        //Realizar movimiento + llamada recursiva a jugar
+        //val movimiento = readInt()
+        //mover(movimiento, tablero, filas, columnas)
+        imprimir_tablero(filas, 0, columnas, 0, dificultad, moverDer(tablerogen, filas, columnas, 0))
+        
       }
       
     }
