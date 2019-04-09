@@ -173,8 +173,8 @@ object juego2048 {
  
  def mover (movimiento:Int, tablero:List[Int], filas:Int, columnas:Int) = movimiento match {
    case 2 =>
-   case 4 =>
-   case 6 =>
+   case 4 => 
+   case 6 => moverDer(tablero, filas, columnas,0)
    case 8 =>
    case _ =>
  }
@@ -182,23 +182,31 @@ object juego2048 {
  //método principal del juego
   def jugar(tablero:List[Int], filas:Int, columnas:Int, dificultad:Int) = dificultad match{
     case 1 =>{
-      val posSemilla = Random.nextInt(filas*columnas+1)
-      val tablerogen = generarSemillas(tablero, dificultad, posSemilla)
+      val tablerogen = List(2,4,8,0,2,4,8,0,2,4,8,0,2,4,8,0)
+      
+      //val tablerogen = generarSemillas(tablero, dificultad, Random.nextInt(filas*columnas))
       imprimir_tablero(filas,0,columnas,0, dificultad, tablerogen)
-      println("___________")
-      println(generarSemillas(tablero, dificultad,  3))
+      //println("___________")
+      //println(generarSemillas(tablero, dificultad,  3))
       if (tablero != Nil){
         //Realizar movimiento + llamada recursiva a jugar
         //val movimiento = readInt()
         //mover(movimiento, tablero, filas, columnas)
+        println("Mover derecha")
         imprimir_tablero(filas, 0, columnas, 0, dificultad, moverDer(tablerogen, filas, columnas, 0))
-        imprimir_tablero(filas, 0, columnas, 0, dificultad, traspuesta(tablerogen, columnas, columnas*filas, 0))
-        val prueba = List(0,2,4,2)
-        println(prueba.tail.tail.head)
+        //mover(movimiento, tablero, filas, columnas)
+        println ("Matriz izquierda")
+        val prueba= traspuesta(tablerogen, columnas, columnas*filas, 0)
+        imprimir_tablero(filas, 0, columnas, 0, dificultad, traspuesta(prueba, columnas, columnas*filas, 0))
+        //val prueba = List(0,2,4,2)
+        //println(prueba.tail.tail.head)
         //println(coger(4, tablero))
-        println(traspuesta(tablerogen, columnas, columnas*filas, 0))
+        
+        //println(traspuesta(prueba,columnas,columnas*filas, 0))
+        //traspuesta(prueba,columnas,columnas*filas, 0))
+        //imprimir_tablero(filas, 0, columnas, 0, dificultad, moverDer(traspuesta(prueba,columnas,columnas*filas, 0), filas, columnas, 0))
       }
-      
+    
     }
   }
 }
