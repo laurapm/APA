@@ -156,12 +156,13 @@ object juego2048 {
    
  }
   
- def traspuesta (tablero:List[Int], columnas: Int, count:Int, pos:Int):List[Int]={
+ def traspuesta (tablero:List[Int], columnas: Int, tam:Int, pos:Int):List[Int]={
    if (tablero == Nil)
      return tablero
    else{
-     if (count ==0) return traspuesta(tablero.tail, columnas, columnas-1, 0)
-     else coger(pos*columnas, tablero)::traspuesta(tablero, columnas, count-1, pos+1)
+     if (pos>=tam) return traspuesta(tablero.tail, columnas, tam-1, 0)
+     else if (tam == columnas) return Nil
+     else coger(pos, tablero)::traspuesta(tablero, columnas, tam, pos+columnas)
    }
  }
  
@@ -191,9 +192,11 @@ object juego2048 {
         //val movimiento = readInt()
         //mover(movimiento, tablero, filas, columnas)
         imprimir_tablero(filas, 0, columnas, 0, dificultad, moverDer(tablerogen, filas, columnas, 0))
-        //imprimir_tablero(filas, 0, columnas, 0, dificultad, traspuesta(tablero, columnas, columnas, 0))
-        println(coger(4, tablero))
-        println(traspuesta(List(0,2,4,2),2,2,0))
+        imprimir_tablero(filas, 0, columnas, 0, dificultad, traspuesta(tablerogen, columnas, columnas*filas, 0))
+        val prueba = List(0,2,4,2)
+        println(prueba.tail.tail.head)
+        //println(coger(4, tablero))
+        println(traspuesta(tablerogen, columnas, columnas*filas, 0))
       }
       
     }
