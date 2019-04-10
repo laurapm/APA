@@ -140,38 +140,60 @@ object juego2048 {
         
   }
  
-def moverDer(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
+ def moverDer (tablero: List[Int], columnas:Int, posicion:Int):List[Int] = {
+   if (tablero==Nil) return Nil
+   else return moverDerAux(cogerN(columnas,tablero), columnas, posicion):::moverDer(quitar(columnas,tablero), columnas, posicion)
+ }
+ 
+ def cogerN(n:Int, l:List[Int]):List[Int] ={
+   if (n==0) return Nil
+   else{
+    
+      return l.head::cogerN(n-1, l.tail)
+   }
+ }
+ 
+ def quitar(n:Int, l:List[Int]):List[Int] ={
+   if (l == Nil) return Nil
+   else{
+     if (n==0) return l
+     else quitar(n-1, l.tail)
+   }
+ }
+ 
+def moverDerAux(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
    
    if(tablero == Nil) return Nil
    else if((posicion+1) % columnas == 0){
      
-     return tablero.head :: moverDer(tablero.tail, columnas, posicion+1)
+     return tablero.head :: moverDerAux(tablero.tail, columnas, posicion+1)
      
    }
    else if(tablero.head != 0 && tablero.tail.head == 0){
      
      val aux = tablero.head :: tablero.tail.tail
-     return 0 :: moverDer(aux, columnas, posicion+1)
+     return 0 :: moverDerAux(aux, columnas, posicion+1)
      
    }
    else if(tablero.head != 0 && tablero.tail.head == tablero.head){
      
      val sum = tablero.head * 2
      val aux = sum :: tablero.tail.tail
-     return 0 :: moverDer(aux, columnas, posicion+1)
+     return 0 :: moverDerAux(aux, columnas, posicion+1)
    
    }
    else{
      
-     val aux = moverDer(tablero.tail, columnas, posicion+1)
+     val aux = moverDerAux(tablero.tail, columnas, posicion+1)
      val tab2 = tablero.head::aux
-     if(tab2.head != 0 && tab2.tail.head == 0) return moverDer(tab2, columnas, posicion)
+     if(tab2.head != 0 && tab2.tail.head == 0) return moverDerAux(tab2, columnas, posicion)
      else return tab2
      
    }
  }
  
 def moverIzq(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
+  
     val aux = moverDer(tablero.reverse, columnas,0)
     return aux.reverse
 }
@@ -238,12 +260,20 @@ def moverIzq(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
         //Realizar movimiento + llamada recursiva a jugar
         //val movimiento = readInt()
         //mover(movimiento, tablero, filas, columnas)
-       // println("Mover derecha")
-        //imprimir_tablero(filas, 0, columnas, 0, dificultad, moverDer(tablerogen, filas, 0))
+        println(cogerN(columnas,tablerogen))
+        println(quitar(columnas,tablerogen))
+        
+        //println("Matriz reverse")
+        //imprimir_tablero(filas,0,columnas,0,dificultad, tablerogen.reverse)
+        println("Mover derecha")
+        imprimir_tablero(filas, 0, columnas, 0, dificultad, moverDer( tablerogen,columnas, 0))
+        //println("Mover a la derecha reverse")
+        //imprimir_tablero(filas,0,columnas,0,dificultad, moverDer( tablerogen.reverse,columnas, 0))
+        
         //mover(movimiento, tablero, filas, columnas)
-        println ("Matriz izquierda")
+        //println ("Matriz izquierda")
        // val prueba= traspuesta(tablerogen, columnas, columnas*filas, 0)
-        imprimir_tablero(filas, 0, columnas, 0, dificultad, moverIzq(tablerogen, columnas, 0))
+       // imprimir_tablero(filas, 0, columnas, 0, dificultad, moverIzq(tablerogen, columnas, columnas))
         //val prueba = List(0,2,4,2)
         //println(prueba.tail.tail.head)
         //println(coger(4, tablero))
