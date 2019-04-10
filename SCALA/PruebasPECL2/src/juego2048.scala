@@ -219,11 +219,29 @@ def moverGen(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
  
 def moverIzq(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
   
-  imprimir_tablero(columnas,0,columnas,0, 1, tablero.reverse)
+  //imprimir_tablero(columnas,0,columnas,0, 1, tablero.reverse)
   val aux = moverGen(tablero.reverse, columnas, 0)
-  imprimir_tablero(columnas,0,columnas,0, 1, aux)
-  imprimir_tablero(columnas,0,columnas,0, 1, aux.reverse)
+  //imprimir_tablero(columnas,0,columnas,0, 1, aux)
+  //imprimir_tablero(columnas,0,columnas,0, 1, aux.reverse)
   return aux.reverse
+}
+
+def moverAbajo(tablero: List[Int], columnas: Int, tam: Int, posicion: Int):List[Int] ={
+  
+  //val m1 = moverGen(tablero, columnas, posicion)
+  //return traspuesta(m1, columnas, tam, posicion)
+  val tras = traspuesta(tablero, columnas, tam, posicion)
+  val mov = moverGen(tras, columnas, posicion)
+  return traspuesta(mov, columnas, tam, posicion)
+  
+}
+
+def moverArriba(tablero: List[Int], columnas: Int, tam: Int, posicion: Int):List[Int] ={
+  
+  val tras = traspuesta(tablero, columnas, tam, posicion)
+  val mov = moverIzq(tras, columnas, posicion)
+  return traspuesta(mov, columnas, tam, posicion)
+    
 }
 
 /* ANTIGUO MÉTODO PARA MOVER A LA DERECHA
@@ -277,7 +295,7 @@ def moverIzq(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
  //método principal del juego
   def jugar(tablero:List[Int], filas:Int, columnas:Int, dificultad:Int) = dificultad match{
     case 1 =>{
-      val tablerogen = List(4,2,0,2,4,2,0,2,4,2,0,2,4,2,0,2)
+      val tablerogen = List(4,4,4,4,2,2,2,2,8,8,8,8,0,0,0,0)
       
       //val tablerogen = generarSemillas(tablero, dificultad, Random.nextInt(filas*columnas))
       imprimir_tablero(filas,0,columnas,0, dificultad, tablerogen)
@@ -293,7 +311,7 @@ def moverIzq(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
         //println("Matriz reverse")
         //imprimir_tablero(filas,0,columnas,0,dificultad, tablerogen.reverse)
         println("Mover derecha")
-        imprimir_tablero(filas, 0, columnas, 0, dificultad, moverGen( tablerogen,columnas, 0))
+        imprimir_tablero(filas, 0, columnas, 0, dificultad, moverAbajo( tablerogen,columnas, filas*columnas, 0))
         //println("Mover a la derecha reverse")
         //imprimir_tablero(filas,0,columnas,0,dificultad, moverDer( tablerogen.reverse,columnas, 0))
         
