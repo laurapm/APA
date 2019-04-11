@@ -1,4 +1,3 @@
-
 import scala.util.Random
 import java.io.File;
 import java.io.FileWriter;
@@ -163,7 +162,7 @@ object juego2048 {
  
 def moverDerAux(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
    
-   if(tablero == Nil) return Nil
+   if(tablero.tail == Nil) return tablero
    else if((posicion+1) % columnas == 0){
      
      return tablero.head :: moverDerAux(tablero.tail, columnas, posicion+1)
@@ -173,31 +172,58 @@ def moverDerAux(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
      
      val aux = tablero.head :: tablero.tail.tail
      return 0 :: moverDerAux(aux, columnas, posicion+1)
-     
-   }
-   else if(tablero.head != 0 && tablero.tail.head == tablero.head){
-     
-     val sum = tablero.head * 2
-     val aux = sum :: tablero.tail.tail
-     return 0 :: moverDerAux(aux, columnas, posicion+1)
-   
    }
    else{
      
-     val aux = moverDerAux(tablero.tail, columnas, posicion+1)
-     val tab2 = tablero.head::aux
-     if(tab2.head != 0 && tab2.tail.head == 0) return moverDerAux(tab2, columnas, posicion)
-     else return tab2
+     return tablero.head :: moverDerAux(tablero.tail, columnas, posicion+1)
      
    }
  }
+
+def sumar(tablero: List[Int], columnas: Int, posicion: Int): List[Int]={
+  
+  if(tablero.tail == Nil) return tablero
+  else if((posicion+1) % columnas == 0){
+     
+     return tablero.head :: sumar(tablero.tail, columnas, posicion+1)
+     
+  }
+  else{
+    
+    if(tablero.head != 0 && tablero.tail.head == tablero.head){
+      
+      val sum = tablero.head * 2
+      val tab = sum :: tablero.tail.tail
+      if(tab.tail == Nil) return 0::tab
+      else{
+        if(tab.head == tab.tail.head) return 0::tab.head::sumar(tab.tail, columnas, posicion+2)
+        else return 0 :: sumar(tab, columnas, posicion+1)
+      }
+      
+    }
+    else return tablero.head :: sumar(tablero.tail, columnas, posicion+1)
+    
+  }
+  
+}
+
+def moverGen(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
+  
+  val m1 = moverDerAux(tablero, columnas, posicion)
+  val sum = sumar(m1, columnas, posicion)
+  val m2 = moverDerAux(sum, columnas, posicion)
+  return m2
+  
+}
  
 def moverIzq(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
   
-    val aux = moverDer(tablero.reverse, columnas,0)
-    return aux.reverse
+  imprimir_tablero(columnas,0,columnas,0, 1, tablero.reverse)
+  val aux = moverGen(tablero.reverse, columnas, 0)
+  imprimir_tablero(columnas,0,columnas,0, 1, aux)
+  imprimir_tablero(columnas,0,columnas,0, 1, aux.reverse)
+  return aux.reverse
 }
-
 
 /* ANTIGUO MÉTODO PARA MOVER A LA DERECHA
  * def moverDer2(tablero: List[Int],  columnas: Int, posicion: Int):List[Int] ={
@@ -250,7 +276,7 @@ def moverIzq(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
  //método principal del juego
   def jugar(tablero:List[Int], filas:Int, columnas:Int, dificultad:Int) = dificultad match{
     case 1 =>{
-      val tablerogen = List(0,2,0,2,4,4,2,2,0,2,0,4,2,0,4,0)
+      val tablerogen = List(4,2,0,2,4,2,0,2,4,2,0,2,4,2,0,2)
       
       //val tablerogen = generarSemillas(tablero, dificultad, Random.nextInt(filas*columnas))
       imprimir_tablero(filas,0,columnas,0, dificultad, tablerogen)
@@ -266,7 +292,7 @@ def moverIzq(tablero: List[Int], columnas: Int, posicion: Int):List[Int] ={
         //println("Matriz reverse")
         //imprimir_tablero(filas,0,columnas,0,dificultad, tablerogen.reverse)
         println("Mover derecha")
-        imprimir_tablero(filas, 0, columnas, 0, dificultad, moverDer( tablerogen,columnas, 0))
+        imprimir_tablero(filas, 0, columnas, 0, dificultad, moverGen( tablerogen,columnas, 0))
         //println("Mover a la derecha reverse")
         //imprimir_tablero(filas,0,columnas,0,dificultad, moverDer( tablerogen.reverse,columnas, 0))
         
