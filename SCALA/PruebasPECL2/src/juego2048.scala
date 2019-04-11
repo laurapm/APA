@@ -16,13 +16,13 @@ def main(args: Array[String]){
     val tablero = tamTablero(dificultad)
     val filas = tablero._1
     val columnas = tablero._2
-    val tableroVacio = List()
+    val tableroVacio = crearTablero(filas*columnas)
 //(tablero:List[Int], filas:Int, columnas:Int, dificultad:Int)
     dificultad match{
-     case 1=>jugar2(crearTablero(filas*columnas),filas,columnas,dificultad, false, 2)
-     case 2=>jugar2(crearTablero(filas*columnas),filas,columnas,dificultad, false, 4)
-     case 3=>jugar2(crearTablero(filas*columnas),filas,columnas,dificultad, false, 6)
-     case 4=>jugar2(crearTablero(filas*columnas),filas,columnas,dificultad, false, 6)
+     case 1=>jugar2(generarSemillas(tableroVacio, columnas, 0, dificultad, 2),filas,columnas,dificultad, false, 2)
+     case 2=>jugar2(generarSemillas(tableroVacio, columnas, 0, dificultad, 4),filas,columnas,dificultad, false, 4)
+     case 3=>jugar2(generarSemillas(tableroVacio, columnas, 0, dificultad, 6),filas,columnas,dificultad, false, 6)
+     case 4=>jugar2(generarSemillas(tableroVacio, columnas, 0, dificultad, 6),filas,columnas,dificultad, false, 6)
      case _ => println("Dificultad no válida")
     }  
   }
@@ -47,7 +47,7 @@ def main(args: Array[String]){
   }
   
   //Método que genera una semilla y la introduce en el tablero
-  /*def generarSemillas(tablero:List[Int], dificultad:Int, posicion:Int):List[Int]= dificultad match{
+  /*def generarSemillas2(tablero:List[Int], dificultad:Int, posicion:Int):List[Int]= dificultad match{
     case 1 => {
       //val posicion = Random.nextInt(tam+1)
       if (tablero == Nil)  tablero
@@ -56,7 +56,7 @@ def main(args: Array[String]){
            2::tablero.tail
         }
         else{
-           tablero.head::generarSemillas(tablero, dificultad, posicion-1)
+           tablero.head::generarSemillas2(tablero, dificultad, posicion-1)
         }
       }
     }
@@ -65,9 +65,9 @@ def main(args: Array[String]){
       if (tablero == Nil) tablero
       else{
         if (posicion==0)
-          valores::generarSemillas(tablero.tail, dificultad, posicion)
+          valores::generarSemillas2(tablero.tail, dificultad, posicion)
         else
-          tablero.head::generarSemillas(tablero, dificultad, posicion-1)
+          tablero.head::generarSemillas2(tablero, dificultad, posicion-1)
       }
     }
   }*/
@@ -97,6 +97,19 @@ def main(args: Array[String]){
         else{
            tablero.head::generarSemillas(tablero, columnas, posicion-1, dificultad, numSemillas)
         }
+      }
+    }
+  }
+  
+  def ponerSemillas(tablero: List[Int], semillas:List[Int]):List[Int]={
+    if (tablero == Nil) Nil
+    else if (semillas == Nil) tablero
+    else {
+      if (tablero.head==0 && semillas.head!=0) semillas.head::ponerSemillas(tablero.tail, semillas.tail)
+      else if (tablero.head!=0 && semillas.head==0) tablero.head::ponerSemillas(tablero.tail, semillas.tail)
+      else if (tablero.head == 0 && semillas.head ==0) tablero.head::ponerSemillas(tablero.tail, semillas.tail)
+      else{
+        tablero.head::ponerSemillas(tablero.tail, semillas)
       }
     }
   }
@@ -270,7 +283,7 @@ def moverArriba(tablero: List[Int], columnas: Int, tam: Int, posicion: Int):List
  }
  
   def cogerN(n:Int, l:List[Int]):List[Int] ={
-   if (n==0)  Nil
+   if (n==0 || l == Nil)  Nil
    else{
       return l.head::cogerN(n-1, l.tail)
    }
@@ -312,23 +325,33 @@ def moverArriba(tablero: List[Int], columnas: Int, tam: Int, posicion: Int):List
    /*AQUÍ VA LA PUNTUACIÓN*/
    val puntuacion = 0
    val posicion = Random.nextInt(filas*columnas+1)
+   //imprimir_tablero(filas, 0, columnas, 0, dificultad, tablero)
    
-   if(malo != true){
+   if(malo == false){
      
      /*AQUÍ VA EL GENERAR SEMILLAS*/
-     val tablerogen = generarSemillas(tablero, dificultad, posicion, dificultad, semillas)
-     imprimir_tablero(filas, 0, columnas, 0, dificultad, tablerogen)
+     //val tablerogen = ponerSemillas(tablero, generarSemillas(tablero, columnas, posicion, dificultad, semillas))
+     imprimir_tablero(filas, 0, columnas, 0, dificultad, tablero)
      println("Ingresa el movimiento que deseas hacer ( ↑ = 8, → = 6, ↓ = 2, ← = 4, salir = 0 )")
      printf(">> ")
      val movimiento = readInt()
-     val tab = mover(movimiento, tablerogen, columnas, dificultad, puntuacion)
+     println(movimiento)
+     val tab = mover(movimiento, tablero, columnas, dificultad, puntuacion)
      if(tab == Nil || tableroLleno(tab)) println("Juego finalizado. ¡Gracias por jugar!")
-     else if(tab == tablero){
+     else if((movimiento == 0) || (movimiento == 2) || movimiento == 4 || movimiento == 6 || movimiento == 8){
        
-       if(dificultad == 4) jugar2(tab, filas, columnas, dificultad, true, semillas)
-       else jugar2(tab, filas, columnas, dificultad, true, semillas-1)
+       if(dificultad == 4){
+         val tab2 = ponerSemillas(tab, generarSemillas(tab, columnas, posicion, dificultad, semillas))
+         jugar2(tab2, filas, columnas, dificultad, false, semillas)
+       }
+       else{
+         val tab2 = ponerSemillas(tab, generarSemillas(tab, columnas, posicion, dificultad, semillas))
+         jugar2(tab2, filas, columnas, dificultad, false, semillas-1)
+       }
      }
-     else jugar2(tab, filas, columnas, dificultad, false, semillas)
+     else{
+       jugar2(tab, filas, columnas, dificultad, true, semillas)
+     }
      
    }
    else{
